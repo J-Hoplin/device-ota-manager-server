@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  api:
+    container_name: ota-server-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - minio
+  db:
+    image: postgres:latest
+    container_name: ota-server-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ota_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_persist:/var/lib/postgresql/data
+  minio:
+    image: minio/minio:latest
+    container_name: ota-server-minio
+    ports:
+      - "9000:9000" # API port
+      - "9001:9001" # Console port
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+volumes:
+  db_persist:
+    driver: local
+  minio_data:
+    driver: local
