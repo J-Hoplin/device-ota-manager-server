@@ -28,3 +28,6 @@ go.work.sum
 
 # compiled binary
 ota
+
+# Makefile compiled binary
+server
